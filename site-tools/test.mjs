@@ -9,7 +9,7 @@ const {html,bundle}=build(source,password);
 assert.equal(decrypt(bundle,password),source);
 assert.throws(()=>decrypt(bundle,'invalid-test-password'));
 const tampered={...bundle,ciphertext:Buffer.from('invalid').toString('base64')};assert.throws(()=>decrypt(tampered,password));
-assert(!html.includes('dataflow-oss'));assert(!html.includes(password));assert(!source.includes(password));
+assert(!html.includes(password));assert(!source.includes(password));
 assert(!html.includes('id="daily"'));assert(!html.includes('id="diaryCalendar"'));
 const runtime=fs.readFileSync(new URL('./unlock.js',import.meta.url),'utf8');
 function harness(saved,remember=true){

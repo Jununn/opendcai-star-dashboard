@@ -14,7 +14,9 @@ export function build(source,password,previous){
  publicHtml=publicHtml.replace(/function renderDiary\(\)\{[\s\S]*?\n\$\('diaryPrev'\)/,"function renderDiary(){}\n$('diaryPrev')");
  const runtime=fs.readFileSync(new URL('./unlock.js',import.meta.url),'utf8');
  publicHtml=publicHtml.replace('</html>','<script id="encryptedPayload" type="application/json">'+JSON.stringify(bundle)+'</script><script>'+runtime+'</script></html>');
- if(publicHtml.includes(password)||publicHtml.includes('dataflow-oss')||publicHtml.includes('id="daily"')||publicHtml.includes('id="protectedContent"'))throw Error('Protected plaintext found in public output');
+ const privateActions=JSON.parse(source.match(/const diaryActions=(\[[\s\S]*?\]);/)[1]);
+ if(privateActions.some(a=>publicHtml.includes(a.url)||publicHtml.includes(a.title)))throw Error('Private action found in public output');
+ if(publicHtml.includes(password)||publicHtml.includes('id="daily"')||publicHtml.includes('id="protectedContent"'))throw Error('Protected plaintext found in public output');
  for(const match of publicHtml.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)){if(match[0].includes('application/json'))continue;new Function(match[1]);}
  return {html:publicHtml,bundle};
 }
