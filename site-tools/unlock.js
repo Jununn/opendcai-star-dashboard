@@ -14,11 +14,17 @@
   const html=await new Response(stream).text();
   let remembered=false;
   try{if(save){localStorage.setItem(storageKey,JSON.stringify({salt:bundle.salt,key:encode(raw)}));remembered=true;}else localStorage.removeItem(storageKey);}catch(e){}
-  const position=window.scrollY;
-  document.open();document.write(html);document.close();
-  document.getElementById('unlockStatusText').textContent=remembered?'已解锁 · 此浏览器已记住':'已解锁 · 仅当前页面';
-  document.getElementById('relockContent').onclick=()=>{try{localStorage.removeItem(storageKey);}catch(e){}location.reload();};
-  window.scrollTo(0,position);
+  const position=window.scrollY,frame=document.createElement('iframe');
+  frame.title='已解锁的 OpenDCAI 看板';
+  frame.style.cssText='position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff;z-index:100';
+  frame.onload=()=>{
+   const doc=frame.contentDocument;
+   doc.getElementById('unlockStatusText').textContent=remembered?'已解锁 · 此浏览器已记住':'已解锁 · 仅当前页面';
+   doc.getElementById('relockContent').onclick=()=>{try{localStorage.removeItem(storageKey);}catch(e){}location.reload();};
+   frame.contentWindow.scrollTo(0,position);
+  };
+  frame.srcdoc=html;
+  document.body.replaceChildren(frame);document.body.style.overflow='hidden';
  }
  form.addEventListener('submit',async event=>{
   event.preventDefault();const button=form.querySelector('button');button.disabled=true;error.textContent='正在解密…';

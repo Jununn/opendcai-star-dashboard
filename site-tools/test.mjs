@@ -15,7 +15,7 @@ const runtime=fs.readFileSync(new URL('./unlock.js',import.meta.url),'utf8');
 function harness(saved,remember=true){
  let submit,written='',reloaded=false;const storage=new Map(saved?[['opendcai-crypto-key-v1',saved]]:[]);
  const elements={encryptedPayload:{textContent:JSON.stringify(bundle)},unlockForm:{addEventListener:(n,f)=>submit=f,querySelector:()=>({disabled:false})},unlockPassword:{value:'',focus(){}},unlockError:{textContent:''},rememberUnlock:{checked:remember},unlockStatusText:{},relockContent:{}};
- const context={crypto:webcrypto,TextEncoder,Uint8Array,Blob,DecompressionStream,Response,atob,btoa,localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},document:{getElementById:id=>elements[id],open(){},write:s=>written=s,close(){}},window:{scrollY:0,scrollTo(){}},location:{reload:()=>reloaded=true}};
+ const context={crypto:webcrypto,TextEncoder,Uint8Array,Blob,DecompressionStream,Response,atob,btoa,localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},document:{getElementById:id=>elements[id],createElement:()=>({style:{},contentDocument:{getElementById:id=>elements[id]},contentWindow:{scrollTo(){}}}),body:{style:{},replaceChildren(frame){written=frame.srcdoc;frame.onload();}}},window:{scrollY:0,scrollTo(){}},location:{reload:()=>reloaded=true}};
  vm.runInNewContext(runtime,context);
  return {elements,storage,submit:()=>submit({preventDefault(){}}),get written(){return written},get reloaded(){return reloaded}};
 }
