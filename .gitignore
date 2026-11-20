@@ -1,0 +1,11 @@
+.secrets/
+
+.private/
+**/*.plain.html
+**/*.backup*
+outputs/star-data.json
+work/
+outputs/automation/
+
+outputs/*.csv
+outputs/protected-source*
